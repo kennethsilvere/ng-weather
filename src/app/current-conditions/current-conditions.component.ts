@@ -1,8 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { WeatherService } from '../weather.service';
 import { LocationService } from '../location.service';
+import { Store } from '@ngrx/store';
+import { State } from '../reducers';
+import { ZipcodeState } from '../reducers/zip-codes.reducer';
 
 
 @Component({
@@ -10,9 +13,23 @@ import { LocationService } from '../location.service';
   templateUrl: './current-conditions.component.html',
   styleUrls: ['./current-conditions.component.css']
 })
-export class CurrentConditionsComponent {
+export class CurrentConditionsComponent implements OnInit{
 
-  constructor(private weatherService : WeatherService, private locationService : LocationService, private router : Router) {
+  zipCodes: string[] = [];
+
+  constructor(private weatherService : WeatherService, 
+              private locationService : LocationService, 
+              private router : Router,
+              private store: Store<State>) {
+  }
+
+  ngOnInit() {
+    this.store.select((state: State) => state.zipcodes).subscribe(
+      (zipcodesState: ZipcodeState) => {
+        this.zipCodes = zipcodesState.zipcodes;
+      }
+    );
+
   }
 
   getCurrentConditions() {
